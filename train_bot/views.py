@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import requests
 import json
+from train_bot.models import Railway
 
 uri = "https://api-tokyochallenge.odpt.org/api/v4/odpt:TrainInformation"
-uri_railway =  "https://api-tokyochallenge.odpt.org/api/v4/odpt:Railway"
 params = {"acl:consumerKey" : "ec9ea47acc38c58335396816f7fd265fb3e68f6aad1546b169005f608529a494"}
 
 def index(request):
@@ -23,10 +23,10 @@ def unko():
     return unko_data
 
   unko = json.loads(r.text)
-  rails = railway()
+  rails = Railway.objects
   for u in unko:
     try:
-      unko_data[rails[u['odpt:railway']]] = u['odpt:trainInformationText']
+      unko_data[rails.filter(railway=u['odpt:railway'])[0].title] = u['odpt:trainInformationText']
     except KeyError:
       continue
   return unko_data
